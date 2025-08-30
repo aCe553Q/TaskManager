@@ -24,6 +24,8 @@ namespace TaskManager.Data
                 .WithOne(ca => ca.Column)
                 .HasForeignKey(ca => ca.ColumnId)
                 .OnDelete(DeleteBehavior.Cascade);
+            base.OnModelCreating(modelBuilder);
         }
+
     }
 }
