@@ -8,7 +8,7 @@ namespace TaskManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class BoardsController : Controller
+    public class BoardsController : ControllerBase
     {
         private readonly AppDbContext _context;
 
@@ -17,12 +17,13 @@ namespace TaskManager.Controllers
             _context = context;
         }
 
+        // GET: api/boards
         [HttpGet]
         public async Task<ActionResult<List<BoardDto>>> GetBoards()
         {
             var boards = await _context.Boards
                 .Include(b => b.Columns)
-                .ThenInclude(c => c.Cards)
+                    .ThenInclude(c => c.Cards)
                 .ToListAsync();
 
             var result = boards.Select(b => new BoardDto
@@ -41,25 +42,35 @@ namespace TaskManager.Controllers
                         Order = card.Order
                     }).ToList()
                 }).ToList()
-
             }).ToList();
-            
+
             return Ok(result);
         }
 
+        // POST: api/boards
         [HttpPost]
         public async Task<ActionResult<BoardDto>> CreateBoard([FromBody] BoardDto boardDto)
         {
             var board = new Board
             {
                 Name = boardDto.Name,
+                Columns = boardDto.Columns.Select(c => new Column
+                {
+                    Name = c.Name,
+                    Cards = c.Cards.Select(card => new Card
+                    {
+                        Title = card.Title,
+                        Description = card.Description,
+                        Order = card.Order
+                    }).ToList()
+                }).ToList()
             };
+
             _context.Boards.Add(board);
             await _context.SaveChangesAsync();
 
-            board.Id = board.Id;
+            boardDto.Id = board.Id;
             return CreatedAtAction(nameof(GetBoards), new { id = board.Id }, boardDto);
         }
-
     }
 }
