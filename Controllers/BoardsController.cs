@@ -51,6 +51,11 @@ namespace TaskManager.Controllers
         [HttpPost]
         public async Task<ActionResult<BoardDto>> CreateBoard([FromBody] BoardDto boardDto)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var board = new Board
             {
                 Name = boardDto.Name,

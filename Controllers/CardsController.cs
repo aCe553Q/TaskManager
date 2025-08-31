@@ -40,6 +40,10 @@ namespace TaskManager.Controllers
         [HttpPost("/api/columns/{columnId}/cards")]
         public async Task<ActionResult<CardDto>> CreateCard(int columnId, [FromBody] CardDto cardDto)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var card = new Card
             {
                 Title = cardDto.Title,
@@ -57,6 +61,10 @@ namespace TaskManager.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCard(int id, [FromBody] CardDto cardDto)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var card = await _context.Cards.FindAsync(id);
             if (card == null) return NotFound();
 

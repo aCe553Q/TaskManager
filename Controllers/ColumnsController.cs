@@ -45,6 +45,10 @@ namespace TaskManager.Controllers
         [HttpPost("/api/boards/{boardId}/columns")]
         public async Task<ActionResult<ColumnDto>> CreateColumn(int boardId, [FromBody] ColumnDto columnDto)
         {
+            if(!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var column = new Column
             {
                 Name = columnDto.Name,
